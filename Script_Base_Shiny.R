@@ -25,6 +25,14 @@ df0=df %>%
          long!='na',
          str_detect(concepto,'CORONA') | str_detect(concepto,'MOSQUITO'))
 
+#dataset de tobilleras electrónicas
+df_tobilleras_raw=read.csv('http://cdn.buenosaires.gob.ar/datosabiertos/datasets/tobilleras/tobilleras_limpio.csv',
+                           stringsAsFactors = F,
+                           encoding = 'UTF-8')
+
+#tabla pivot de las tobilleras
+df_tobilleras = df_tobilleras_raw %>% 
+  mutate(Year=substr(año_mes_oficio,1,4))
 
 #Shiny App
 ui = fluidPage(
