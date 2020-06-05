@@ -63,3 +63,9 @@ df1 <- head(df_mapa_all) %>%
   group_by(anio) %>% 
   count(tipo_delito,subtipo_delito)
 
+df2 %>% 
+  ggplot(aes(x=Delito, fill = Delito)) + 
+  geom_bar(show.legend = T) +
+  facet_wrap(~Año) +
+  
+  
