@@ -68,6 +68,13 @@ df2 <- df0 %>%
            Barrio) %>% 
   summarise(cantidad = n())
 
+df3 <- df0 %>% 
+  group_by(Año,
+           Delito,
+           Subtipo,
+           Horario) %>% 
+  summarise(cantidad = n())
+
 #dataset de tobilleras electrónicas
 df_tobilleras=read.csv('http://cdn.buenosaires.gob.ar/datosabiertos/datasets/tobilleras/tobilleras_limpio.csv',
                        stringsAsFactors = F,
@@ -116,7 +123,8 @@ ui = fluidPage(theme = shinytheme('superhero'),
                ),
                tabPanel('Delitos por Comuna',
                         br(),
-                        plotOutput(outputId = 'G2')))
+                        plotOutput(outputId = 'G2'))
+               ) #Fin navigation list
     ), #Fin Tab gráficos
     tabPanel("About us",
              br(),
@@ -198,7 +206,7 @@ server = function(input, output){
       facet_wrap(~Año)+
       coord_flip()+
       theme_bw()
-})
+  })
 }
 
 shinyApp(ui=ui, server=server)
