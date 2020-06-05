@@ -1,8 +1,8 @@
 # Proyecto_Final_Eant
-Proyecto grupal para [Escuela Argentina de Nuevas Tecnologías](https://eant.tech/)
+Proyecto final del curso Data Analytics para [Escuela Argentina de Nuevas Tecnologías](https://eant.tech/)
 
 Integrantes:
-Antonella Cremona, Esteban Nardi, Oscar Alvarez
+Antonella Cremona
 
 Tema: Seguridad
 
