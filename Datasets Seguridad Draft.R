@@ -1,5 +1,23 @@
 #Datasets de seguridad
 
+#Dataset SUACI
+df=read.csv('http://cdn.buenosaires.gob.ar/datosabiertos/datasets/sistema-unico-de-atencion-ciudadana/sistema-unico-de-atencion-ciudadana-2020.csv', 
+            stringsAsFactors = F, 
+            encoding = 'UTF-8')
+
+#DF SUACI refinado
+df0=df %>% 
+  filter(fecha_ingreso>='2020-03-20'),
+lat!='na',
+long!='na',
+str_detect(concepto,'CORONA') | str_detect(concepto,'MOSQUITO'))
+
+df0=df %>% 
+  filter(fecha_ingreso>='2020-03-20',
+         lat!='na',
+         long!='na',
+         str_detect(concepto,'CORONA') | str_detect(concepto,'MOSQUITO'))
+
 #dataset de tobilleras electrónicas
 df_tobilleras_raw=read.csv('http://cdn.buenosaires.gob.ar/datosabiertos/datasets/tobilleras/tobilleras_limpio.csv',
                        stringsAsFactors = F,
@@ -28,17 +46,20 @@ df_areaspf %>%
              lat = ~lat) %>% 
   addCircleMarkers(lng = ~long,
                    lat = ~lat,
-                   popup = ~ htmlEscape(nombre_comisaria))
+                   popup = ~ htmlEscape(nombre_comisaria),
+                   clusterOptions = markerClusterOptions())
 
 
-#mapa del delito 2019
-'http://cdn.buenosaires.gob.ar/datosabiertos/datasets/mapa-del-delito/delitos_2019.csv'
 
-#mapa del delito 2018
-'http://cdn.buenosaires.gob.ar/datosabiertos/datasets/mapa-del-delito/delitos_2018.csv'
 
-#mapa del delito 2017
-'http://cdn.buenosaires.gob.ar/datosabiertos/datasets/mapa-del-delito/delitos_2017.csv'
+df2 <- df_mapa_all %>% 
+  group_by(anio,
+           tipo_delito,
+           subtipo_delito) %>% 
+  summarise(cantidad = n())
 
-#mapa del delito 2016
-'http://cdn.buenosaires.gob.ar/datosabiertos/datasets/mapa-del-delito/delitos_2016.csv'
+df1 <- head(df_mapa_all) %>%
+  mutate(anio = as.numeric(format.Date(fecha, '%Y')))
+  group_by(anio) %>% 
+  count(tipo_delito,subtipo_delito)
+
