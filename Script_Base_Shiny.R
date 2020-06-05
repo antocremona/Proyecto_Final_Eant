@@ -77,20 +77,22 @@ df_tobilleras=read.csv('http://cdn.buenosaires.gob.ar/datosabiertos/datasets/tob
 
 
 #Shiny App
-ui = fluidPage(theme = shinytheme('darkly'), 
+ui = fluidPage(theme = shinytheme('superhero'), 
                h1 (img 
                    (src='https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSDilWTQk6Twojy1Iy1K_FIbcmEjBVMH-RF_yYqZU8QOj_RA4uo&usqp=CAU',
                      height='50%', width='50%')), #imagen Eant
   br(),
-  p('Proyecto Final - ', strong('EANT')),
+  p('Proyecto Final - ', strong('EANT'),' - Tema: Seguridad'),
   tabsetPanel(
+    tabPanel('Descripción del proyecto',
+             br(),
+             column(12,
+                    p('En esta aplicación Shiny se podrán observar diferentes variables de relevancia con respecto a la seguridad en la Ciudad Autónoma de Buenos Aires'),
+                    )),
     tabPanel('Información de delitos en CABA',
              navlistPanel(
                tabPanel('Detalle de delitos en CABA',
                         br(),
-                        selectInput(inputId = 'Tipo_delito',
-                                    label = 'Tipo de delito',
-                                    choices = unique(df0$Delito)),
                         dataTableOutput(outputId = 'Table_Tipo')
                ),
                tabPanel('Mapa de Homicidios en 2019',
@@ -106,10 +108,25 @@ ui = fluidPage(theme = shinytheme('darkly'),
                ),
                column(2)
              )), #Fin Tabla pivot Tobilleras
+    tabPanel('Gráficos comparativos',
+             navlistPanel(
+               tabPanel('Delitos por modalidad',
+                        br(),
+                        plotOutput(outputId = 'G1')
+               ),
+               tabPanel('Delitos por Comuna',
+                        br(),
+                        plotOutput(outputId = 'G2')))
+    ), #Fin Tab gráficos
     tabPanel("About us",
              br(),
              column(2),
-             column(8, 
+             column(10,
+                    p('Fuente de datos:'),
+                    tags$div(tags$ul(
+                      tags$li(tags$a(href='https://data.buenosaires.gob.ar/dataset/mapa-del-delito','Mapa del delito')),
+                      tags$li(tags$a(href='https://data.buenosaires.gob.ar/dataset/tobilleras-electronicas','Tobilleras electrónicas'))
+                    )),
                     p('Estos datos se generaron a partir de los siguientes paquetes:'),
                     tags$div(tags$ul(
                       tags$li('shiny'),
@@ -122,8 +139,10 @@ ui = fluidPage(theme = shinytheme('darkly'),
                       tags$li('rpivotTable'),
                       tags$li('devtools'),
                       tags$li('stringr')
-                    ))
-             ),
+                    )),
+                    br(),
+                    p('Creado por Antonella Cremona en el marco del curso Data Analytics con R - Mayo de 2020'),
+                    p('Código disponible en: ',tags$a(href='https://github.com/antocremona/Proyecto_Final_Eant.git','Github'))),
              column(2))
   ))
 
@@ -159,5 +178,27 @@ server = function(input, output){
   output$RPivot_Tobilleras=renderRpivotTable({
     rpivotTable(df_tobilleras, rows="categoria", col="estado_tobillera", aggregatorName="Count", vals="caso_id")
   })
+  
+  output$G1=renderPlot({
+    df2 %>% 
+      mutate(Crimen = paste(Delito,' - ',Subtipo)) %>% 
+      ggplot(aes(x=Crimen, y=cantidad, fill = Crimen)) + 
+      geom_col(show.legend = F) +
+      facet_wrap(~Año)+
+      coord_flip()+
+      theme_bw()
+  })
+  
+  output$G2=renderPlot({
+    df2 %>% 
+      mutate(Crimen = paste(Delito,' - ',Subtipo)) %>%
+      filter(is.na(Comuna)==F) %>% 
+      ggplot(aes(x=Comuna, y=cantidad, fill = Crimen)) + 
+      geom_col(show.legend = T) +
+      facet_wrap(~Año)+
+      coord_flip()+
+      theme_bw()
+})
 }
+
 shinyApp(ui=ui, server=server)
